@@ -592,7 +592,7 @@ namespace SP2
       0.25f, //parked
       1.f,   //ready
       1.5f,  //fortified
-      1.f    //moving
+      0.85f    //moving, changed for AOD from 1 to .85
    };
 
    namespace ERefusedMoveReason
@@ -708,10 +708,11 @@ namespace SP2
    const INT8   c_iCellMissionPrepareTimeMonthCoupEtat       = 12;
 
 	//Unit type upkeep modifiers
+   //Changed for AOD, training is not as powerful, reduce its costs
 	const REAL32 c_fUnitUpkeepModifierRecruit = 0.75f;
 	const REAL32 c_fUnitUpkeepModifierRegular = 1.f;
-	const REAL32 c_fUnitUpkeepModifierVeteran = 1.5f;
-	const REAL32 c_fUnitUpkeepModifierElite = 3.f;
+	const REAL32 c_fUnitUpkeepModifierVeteran = 1.25f;
+	const REAL32 c_fUnitUpkeepModifierElite = 1.5f;
 
 	//AI Action  modifiers
 	const REAL32 c_fAIActionDoubleMinus = 0.f;
@@ -1027,7 +1028,7 @@ namespace SP2
 
    //Superpower 2 Earth dimensions
    //----------------------------------------------------
-   const REAL32 EARTH_CIRCONFERENCE_AT_EQUATOR = 40074.78f;
+   const REAL32 EARTH_CIRCONFERENCE_AT_EQUATOR = 40075.f;
 
    //Superpower 2 Military constants
    const REAL32 c_fConquerThreshold = 1.f;
@@ -1052,7 +1053,7 @@ namespace SP2
 //   const INT32 SP2_TIME_SCALE_DEFAULT  = 87600; //In tenths of seconds //1hr = 1year
    const REAL64 c_fDaysForRegionAnnex  = 180.f;
 
-   const UINT32 c_iCombatSimulationSlowDownFactor = 4;
+   const UINT32 c_iCombatSimulationSlowDownFactor = 16; //16 for AOD
    // Various other constants
    //-----------------------------------------------------
    CWSTR LOCAL_IP_ADDRESS            = L"127.0.0.1";
