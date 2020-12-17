@@ -429,8 +429,9 @@ bool GAI::ShouldCountryContinueOffensiveWar(const GWar& in_War, UINT32 in_iCount
 	//If the war has been going on for less than a month, the country will continue fighting
 	if(l_TimeSpent.Days() < 31.f)
 		return true;
-	
-	if(l_TimeSpent.Days() > 1825.f)
+
+	//AOD, 6 months
+	if(l_TimeSpent.Days() > 365.f)
 		return false;
 
 	//Rank between 0 and 1 the status of each variable

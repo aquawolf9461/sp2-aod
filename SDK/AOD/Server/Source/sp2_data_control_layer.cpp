@@ -5590,11 +5590,12 @@ void GDataControlLayer::LoseRelationsAnnexation(UINT32 in_iCountryAnnexing, UINT
 
 void GDataControlLayer::LoseRelationsWarDeclaration(UINT32 in_iCountryDeclaringWar, UINT32 in_iCountryBeingDeclaredWarOn, const set<UINT32>& in_CountriesAttackingWithAttacker)
 {
-    //Changed for AOD, geo group matters a lot more now
+    //Changed for AOD, geo group matters a lot more now, also continent factor
 	const REAL32 c_fRelationsAdjustDefendingSide = 2.f;
 	const REAL32 c_fRelationsAdjustMultiplierGoodBonus = 0.1f;
 	const REAL32 c_fRelationsBonusAllied = 10.f;
 	const REAL32 c_fRelationsAdjustWhenNotInSameGeoGroup = 0.1f;
+	const REAL32 c_fRelationsAdjustWhenNotInSameContinent = 0.15f;
 
 	//Lose relations with other countries			
 	const UINT8* l_pDiplomaticTarget = g_ServerDAL.CountryDiplomaticStatuses(in_iCountryBeingDeclaredWarOn);
@@ -5614,6 +5615,16 @@ void GDataControlLayer::LoseRelationsWarDeclaration(UINT32 in_iCountryDeclaringW
 	{
 		l_iGeoGroupTarget.insert((UINT32)g_ServerDAL.RegionGeoGroup(*it));
 	}
+
+	hash_set<INT32> l_iContinentTarget;
+	//AOD, fill the continent of the target
+	const set<UINT32>& l_ContinentsTarget = g_ServerDAL.CountryPoliticalControl(in_iCountryBeingDeclaredWarOn);
+	for(set<UINT32>::const_iterator it = l_ContinentsTarget.begin();
+		it != l_RegionsTarget.end(); it++)
+	{
+		l_iContinentTarget.insert((UINT32)g_ServerDAL.RegionContinent(*it));
+	}
+
 	REAL32 l_fRelationsAttackerTarget = g_ServerDAL.RelationBetweenCountries(in_iCountryDeclaringWar,in_iCountryBeingDeclaredWarOn) + 100.f;
 	
 	REAL32 l_fRelationsTowardAttacker = 0.f;
@@ -5628,6 +5639,7 @@ void GDataControlLayer::LoseRelationsWarDeclaration(UINT32 in_iCountryDeclaringW
 		l_pObserver = g_ServerDAL.CountryData(i);
 
 		bool l_bSameGeoGroup = false;
+		bool l_bSameContinent = false; //AOD
 		const set<UINT32>& l_RegionsObserver = g_ServerDAL.CountryPoliticalControl(i); 
 		for(set<UINT32>::const_iterator it = l_RegionsObserver.begin();
 			it != l_RegionsObserver.end(); it++)
@@ -5635,6 +5647,12 @@ void GDataControlLayer::LoseRelationsWarDeclaration(UINT32 in_iCountryDeclaringW
 			if(l_iGeoGroupTarget.count((UINT32)g_ServerDAL.RegionGeoGroup(*it)) > 0)
 			{
 				l_bSameGeoGroup = true;
+				break;
+			}
+			//AOD
+			if (l_iContinentTarget.count((UINT32)g_ServerDAL.RegionContinent(*it)) > 0)
+			{
+				l_bSameContinent = true;
 				break;
 			}
 		}
@@ -5675,10 +5693,13 @@ void GDataControlLayer::LoseRelationsWarDeclaration(UINT32 in_iCountryDeclaringW
 
 		if(!l_bSameGeoGroup)
 			l_fChangeOfRelations *= c_fRelationsAdjustWhenNotInSameGeoGroup;
+		//AOD
+		if(!l_bSameContinent)
+			l_fChangeOfRelations *= c_fRelationsAdjustWhenNotInSameContinent;
 
 		//! Adjust the aggressiveness to this factor
-		//0.25f for AOD
-		l_fChangeOfRelations *= (0.25f + g_SP2Server->AIAggressiveness());
+		//0.15f for AOD
+		l_fChangeOfRelations *= (0.15f + g_SP2Server->AIAggressiveness());
 
 		g_ServerDAL.RelationBetweenCountries(i,in_iCountryDeclaringWar,
 			g_ServerDAL.RelationBetweenCountries(i,in_iCountryDeclaringWar) + l_fChangeOfRelations);
