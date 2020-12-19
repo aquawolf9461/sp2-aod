@@ -265,8 +265,8 @@ bool GWorldBehavior::Iterate_Population(GRegionEx* const in_pRegion, INT64& in_i
 	//Changed for AOD, the total manpower pool will always try to be 1.5% of 1565 pool + new 1565
 	//If the manpower pool is completely drained, it will try to replenish to 1.5% of 1565 + new 1565 pool
 	//And if an excess manpower pool is detected, it will remove the excess manpower
-	l_iVarManPower = m_CountryData->Pop1565() + l_iNew1565;
-	m_CountryData->MiliManpowerAvailable((INT64)(REAL32)(SP2::c_fPourcPopulationAbleToEnroll * l_iVarManPower));
+	l_iVarManPower = m_CountryData->Pop1565();
+	m_CountryData->MiliManpowerAvailable((INT64)(REAL32)(SP2::c_fPourcPopulationAbleToEnroll * l_iVarManPower) + (l_iNew1565));
 
 	l_iTemp65 = in_pRegion->Population65() - l_iDeaths65;
 	//add adults coming from the 15-65 category
